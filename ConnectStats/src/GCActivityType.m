@@ -292,4 +292,5 @@ static GCActivityTypes * _activityTypesCache = nil;
     return [[GCActivityType activityTypes] allTypesForParent:parentType];
 }
 
+
 @end

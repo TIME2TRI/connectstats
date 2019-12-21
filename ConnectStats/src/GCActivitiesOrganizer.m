@@ -332,9 +332,21 @@ NSString * kNotifyOrganizerReset = @"kNotifyOrganizerReset";
         GCActivityMetaValue * detailAType = dict[act.activityId];
         if (detailAType) {
             if (detailAType.key && ![detailAType.key isEqualToString:@""]) {
-                act.activityTypeDetail = [GCActivityType activityTypeForKey:detailAType.key];
+                act.activityTypeDetail = [GCActivityType activityTypeForKey:[GCActivityTypes remappedLegacy:detailAType.key]];
             }else{
-                act.activityTypeDetail = [GCActivityType activityTypeForKey:detailAType.display];
+                act.activityTypeDetail = [GCActivityType activityTypeForKey:[GCActivityTypes remappedLegacy:detailAType.display]];
+            }
+            
+            if( ! [act.activityTypeDetail.parentType.key isEqualToString:act.activityType] &&
+               ! [act.activityTypeDetail.key isEqualToString:act.activityType]
+               ){
+                RZLog(RZLogInfo, @"%@ [%@] Fixing %@ -> %@", act, [act.date dateShortFormat], act.activityType, act.activityTypeDetail.parentType.key);
+                act.activityType = act.activityTypeDetail.parentType.key;
+            }else{
+                if( [act.activityType rangeOfString:@"ski"].location != NSNotFound){
+                    RZLog(RZLogInfo, @"Missed %@ %@", act.activityTypeDetail, act.activityType);
+
+                }
             }
         }
         [self recordActivityType:act];
